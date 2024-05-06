@@ -1,4 +1,5 @@
 import pywikibot
+import mwparserfromhell
 
 
 # Function to retrieve information from Wikipedia
@@ -13,9 +14,25 @@ def get_wikipedia_info(query, lang='en'):
         # Retrieve title, URL, and summary of the Wikipedia page
         title = page.title()
         url = page.full_url()
-        summary = page.text[:500]  # Extracting first 500 characters as summary
+        wikitext = page.text  # Extracting first 500 characters as summary
+        parsed = mwparserfromhell.parse(wikitext)
+        templates = parsed.filter_templates()
 
-        return title, url, summary
+        # print the template names and parameters
+        for template in templates:
+            print(f"Template name: {template.name}")
+            for param in template.params:
+                print(f"  {param.name}: {param.value}")
+
+        # retrieve all categories in the page
+        categories = [x.title.strip_code() for x in parsed.filter_wikilinks() if x.title.startswith("Category:")]
+        print(categories)
+        # preview the first 500 characters of the page
+        print(parsed.strip_code().strip()[0:500])
+        # preview the first 500 characters of the wikitext
+        print(wikitext[0:500])
+
+        return title, url, parsed
     except pywikibot.exceptions.PageRelatedError as e:
         # If the page doesn't exist or other related errors occur, handle it
         return f"Error: {e}", None, None
@@ -24,4 +41,4 @@ def get_wikipedia_info(query, lang='en'):
 if __name__ == '__main__':
     # Example usage
     keyword = "Wine"
-    print(get_wikipedia_info(keyword))
+    get_wikipedia_info(keyword)
