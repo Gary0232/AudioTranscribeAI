@@ -19,3 +19,9 @@ def get_wikipedia_info(query, lang='en'):
     except pywikibot.exceptions.PageRelatedError as e:
         # If the page doesn't exist or other related errors occur, handle it
         return f"Error: {e}", None, None
+
+
+if __name__ == '__main__':
+    # Example usage
+    keyword = "Wine"
+    print(get_wikipedia_info(keyword))
