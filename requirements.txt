@@ -1,2 +1,2 @@
-pywikibot
-nltk
+pywikibot~=9.1.2
+nltk~=3.8.1
