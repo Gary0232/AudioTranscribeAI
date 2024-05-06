@@ -2,10 +2,10 @@ import pywikibot
 
 
 # Function to retrieve information from Wikipedia
-def get_wikipedia_info(query):
+def get_wikipedia_info(query, lang='en'):
     try:
         # Set language of Wikipedia you want to search
-        site = pywikibot.Site("en", "wikipedia")
+        site = pywikibot.Site(lang, "wikipedia")
 
         # Search for the query on Wikipedia
         page = pywikibot.Page(site, query)
