@@ -6,6 +6,4 @@ text_file_path = "./text/exampleDoc"
 with open(text_file_path, 'r') as file:
     query = file.read()
 
-print(query)
-
 retrieve_information_from_text(query)

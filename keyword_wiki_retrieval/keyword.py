@@ -33,11 +33,12 @@ def retrieve_information_from_text(text):
     for noun in nouns:
         print(f"----------------------------Retrieving Wiki information for: {noun}------------------------------")
         # Online retrieval (Wikipedia)
-        title, url, summary = get_wikipedia_info(noun)
+        title, url, summary, images_url = get_wikipedia_info(noun)
         if url:
             print(f"Wikipedia Title: {title}")
             print(f"Wikipedia URL: {url}")
             print(f"Wikipedia Summary: {summary}")
+            print(f"Wikipedia Images URL: {images_url}")
         else:
             print("No Wikipedia page found.")
         print(f"----------------------------Retrieving dictionary information for:------------------------------"

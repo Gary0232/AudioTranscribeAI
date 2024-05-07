@@ -1,44 +1,44 @@
 import pywikibot
 import mwparserfromhell
-
+from PIL import Image
 
 # Function to retrieve information from Wikipedia
+
 def get_wikipedia_info(query, lang='en'):
     try:
-        # Set language of Wikipedia you want to search
+        # Set the Wikipedia site language and initialize
         site = pywikibot.Site(lang, "wikipedia")
-
-        # Search for the query on Wikipedia
         page = pywikibot.Page(site, query)
 
-        # Retrieve title, URL, and summary of the Wikipedia page
+        # Retrieve the page title, URL, and text
         title = page.title()
         url = page.full_url()
-        wikitext = page.text  # Extracting first 500 characters as summary
+        wikitext = page.text
         parsed = mwparserfromhell.parse(wikitext)
-        templates = parsed.filter_templates()
 
-        # print the template names and parameters
-        for template in templates:
-            print(f"Template name: {template.name}")
-            for param in template.params:
-                print(f"  {param.name}: {param.value}")
+        # Extract image URLs from the parsed content
+        image_titles = [x.title.strip_code().strip() for x in parsed.filter_wikilinks() if
+                        x.title.startswith("File:")]
 
-        # retrieve all categories in the page
-        categories = [x.title.strip_code() for x in parsed.filter_wikilinks() if x.title.startswith("Category:")]
-        print(categories)
-        # preview the first 500 characters of the page
-        print(parsed.strip_code().strip()[0:500])
-        # preview the first 500 characters of the wikitext
-        print(wikitext[0:500])
+        # Fetch actual URLs for the images
+        images_url = []
+        for image_title in image_titles:
+            image_page = pywikibot.FilePage(site, image_title)
+            image_url = image_page.full_url()
+            images_url.append(image_url)
+        # Extract the first 500 characters of text as a summary
+        summary = parsed.strip_code().strip()[0:500]
 
-        return title, url, parsed
+        # Return the title, URL, summary, and images
+        return title, url, summary, images_url
     except pywikibot.exceptions.PageRelatedError as e:
-        # If the page doesn't exist or other related errors occur, handle it
-        return f"Error: {e}", None, None
+        # Handle errors, such as missing pages
+        return f"Error: {e}", None, None, None
 
 
 if __name__ == '__main__':
     # Example usage
     keyword = "Wine"
-    get_wikipedia_info(keyword)
+    title, url, summary, image = get_wikipedia_info(keyword)
+    print(f"title: {title}\n url: {url}\n summary: {summary}\n image: {image}\n")
+
