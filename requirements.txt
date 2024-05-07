@@ -2,3 +2,4 @@ pywikibot~=9.1.2
 nltk~=3.8.1
 mwparserfromhell~=0.6.6
 gradio~=4.29.0
+moviepy~=1.0.3
