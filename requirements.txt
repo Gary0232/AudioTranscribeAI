@@ -1,3 +1,3 @@
-pywikibot
-nltk
-PyDictionary
+pywikibot~=9.1.2
+nltk~=3.8.1
+mwparserfromhell~=0.6.6
