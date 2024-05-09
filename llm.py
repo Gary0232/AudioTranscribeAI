@@ -3,12 +3,9 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 import pandas as pd
 
 import sacrebleu
-from rouge import Rouge
 from tqdm import tqdm
 import os
 import pdb
-
-
 
 
 # expected input text from audio stage
