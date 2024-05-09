@@ -21,6 +21,22 @@ model_name = 'meta-llama/Llama-2-7b-chat-hf'
 pipe = pipeline("text-generation", model=model_name, torch_dtype=torch.bfloat16, device_map="auto")
 
 
+def question_answer(input_text, question_text, prompt_template="background text: {}, question: {}"):
+    messages = [
+        {
+            "role": "system",
+            "content": "You are a expert question answer chat bot who always responds in the style of professional, you will be givin a background text, and a question, you need to answerthe question based on the background text",
+        },
+        {"role": "user", "content": prompt_template.format(input_text, question_text)},
+    ]
+
+    prompt = pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    outputs = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.7, top_k=50, top_p=0.95)
+    outputs = outputs[0]["generated_text"]
+
+    return outputs
+
+
 
 def text_summarization(input_text, prompt_template="please summarize the text: {}"):
     messages = [
