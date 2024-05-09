@@ -6,36 +6,27 @@ import sacrebleu
 from rouge import Rouge
 from tqdm import tqdm
 import os
+import pdb
+
 
 
 
 # expected input text from audio stage
 # expected output: QA / Sumamrization
 
-# ref https://huggingface.co/docs/transformers/en/perf_infer_gpu_one#combine-optimizations
-# quantization_config = BitsAndBytesConfig(
-#     load_in_4bit=True,
-#     bnb_4bit_compute_dtype=torch.float16
-# )
-
-# tokenizer = AutoTokenizer.from_pretrained("huggyllama/llama-7b")
-# model = AutoModelForCausalLM.from_pretrained("huggyllama/llama-7b", quantization_config=quantization_config)
-
 # used https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0
-model_name = 'TinyLlama/TinyLlama-1.1B-Chat-v1.0'
-# model_name = 'meta-llama/Llama-2-7b-chat-hf'
+# model_name = 'TinyLlama/TinyLlama-1.1B-Chat-v1.0'
+model_name = 'meta-llama/Llama-2-7b-chat-hf'
 
 pipe = pipeline("text-generation", model=model_name, torch_dtype=torch.bfloat16, device_map="auto")
-
-# TODO: comprare with meta-llama/Llama-2-7b-chat-hf
 
 
 
 def text_summarization(input_text, prompt_template="please summarize the text: {}"):
     messages = [
-    {
+        {
             "role": "system",
-            "content": "You are a expert text summarization chatbot who always responds in the style of professional",
+            "content": "You are a expert text summarization who always responds in the style of professional, please direct output the summarization, without other unnecessary sentences.",
         },
         {"role": "user", "content": prompt_template.format(input_text)},
     ]
@@ -45,7 +36,10 @@ def text_summarization(input_text, prompt_template="please summarize the text: {
     outputs = outputs[0]["generated_text"]
 
     # get <|assistant|>
-    outputs = outputs.split("<|assistant|>")[1].strip()
+    if model_name == "TinyLlama/TinyLlama-1.1B-Chat-v1.0":
+        outputs = outputs.split("<|assistant|>")[1].strip() 
+    elif model_name == "meta-llama/Llama-2-7b-chat-hf":
+        outputs = outputs.split("[/INST]")[-1].strip()
 
     return outputs
 
