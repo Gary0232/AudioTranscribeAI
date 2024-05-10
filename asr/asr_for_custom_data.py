@@ -115,15 +115,15 @@ def transcribe_audio_for_custom_data(file_path, language="english"):
         logger.info("Generating translation...")
         translation_ids = model.generate(input_features, forced_decoder_ids=forced_decoder_ids)
         translation = processor.batch_decode(translation_ids, skip_special_tokens=True)
-        logger.info("Native Transcription: ", native_transcription[0])
-        logger.info("Translation: ", translation[0])
+        logger.info(f"Native Transcription: {native_transcription[0]}")
+        logger.info(f"Translation: {translation[0]}")
         return {
             "native_transcription": native_transcription[0],
             "translation": translation[0],
             "is_translation": True
         }
     else:
-        logger.info("Native Transcription: ", native_transcription[0])
+        logger.info(f"Native Transcription: {native_transcription[0]}")
         return {
             "native_transcription": native_transcription[0],
             "is_translation": False
