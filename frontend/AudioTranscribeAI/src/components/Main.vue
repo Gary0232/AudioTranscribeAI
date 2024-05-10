@@ -5,7 +5,7 @@ import CompromiseTextBox from "@/components/CompromiseTextBox.vue";
 import {debounce} from "lodash";
 
 
-const apiUrl = 'http://localhost:5000';
+const apiUrl = 'http://localhost:4000';
 // variable to store file upload
 
 
