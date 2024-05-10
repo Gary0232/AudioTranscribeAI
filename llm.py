@@ -7,13 +7,12 @@ from tqdm import tqdm
 import os
 import pdb
 
-
 # expected input text from audio stage
 # expected output: QA / Sumamrization
 
 # used https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0
-# model_name = 'TinyLlama/TinyLlama-1.1B-Chat-v1.0'
-model_name = 'meta-llama/Llama-2-7b-chat-hf'
+model_name = 'TinyLlama/TinyLlama-1.1B-Chat-v1.0'
+# model_name = 'meta-llama/Llama-2-7b-chat-hf'
 
 pipe = pipeline("text-generation", model=model_name, torch_dtype=torch.bfloat16, device_map="auto")
 
@@ -34,7 +33,6 @@ def question_answer(input_text, question_text, prompt_template="background text:
     return outputs
 
 
-
 def text_summarization(input_text, prompt_template="please summarize the text: {}"):
     messages = [
         {
@@ -50,11 +48,12 @@ def text_summarization(input_text, prompt_template="please summarize the text: {
 
     # get <|assistant|>
     if model_name == "TinyLlama/TinyLlama-1.1B-Chat-v1.0":
-        outputs = outputs.split("<|assistant|>")[1].strip() 
+        outputs = outputs.split("<|assistant|>")[1].strip()
     elif model_name == "meta-llama/Llama-2-7b-chat-hf":
         outputs = outputs.split("[/INST]")[-1].strip()
 
     return outputs
+
 
 def cal_bleu(reference, hypothesis):
     bleu = sacrebleu.corpus_bleu([hypothesis], [[reference]])
@@ -79,19 +78,21 @@ def evaluation(test_df, prompt_template):
         counter += 1
         running_avg = all_bleu / counter
 
-        pred_df = pd.concat([pred_df, pd.DataFrame([[input, gt, model_output, bleu_score]], columns=["Input", "Ground Truth", "Prediction", "BLEU Score"])])
+        pred_df = pd.concat([pred_df, pd.DataFrame([[input, gt, model_output, bleu_score]],
+                                                   columns=["Input", "Ground Truth", "Prediction", "BLEU Score"])])
 
         pbar.set_postfix({"BLEU": running_avg})
         pbar.update(1)
 
     return running_avg, pred_df
 
+
 if __name__ == "__main__":
     # dataset from https://www.kaggle.com/datasets/sunnysai12345/news-summary
     data_df = pd.read_csv("data/news_summary/news_summary_sampled.csv")
     # drop the row containing NaN
     data_df = data_df.dropna()
-    
+
     prompt_template = ["summarize: {}", "summarize the text: {}", "please summarize the text: {}"]
 
     eval_performance_df = pd.DataFrame(columns=["Prompt", "BLEU Score"])
@@ -103,18 +104,17 @@ if __name__ == "__main__":
         # save pred_df
         if not os.path.exists("llm_eval_results"):
             os.makedirs("llm_eval_results")
-        
+
         save_path = os.path.join("llm_eval_results", model_name)
         if not os.path.exists(save_path):
             os.makedirs(save_path)
-        
+
         pred_df.to_csv(os.path.join(save_path, f"{prompt}_pred_df.csv"), index=False)
 
-
-        eval_performance_df = pd.concat([eval_performance_df, pd.DataFrame([[prompt, bleu_score]], columns=["Prompt", "BLEU Score"])])
+        eval_performance_df = pd.concat(
+            [eval_performance_df, pd.DataFrame([[prompt, bleu_score]], columns=["Prompt", "BLEU Score"])])
         print(f"BLEU Score: {bleu_score}")
         print("\n")
 
     # save
     eval_performance_df.to_csv(os.path.join(save_path, "eval_performance_df.csv"), index=False)
-

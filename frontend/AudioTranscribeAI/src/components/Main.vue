@@ -3,7 +3,6 @@ import {ref, watch} from "vue";
 import axios from 'axios';
 import CompromiseTextBox from "@/components/CompromiseTextBox.vue";
 import {debounce} from "lodash";
-import {da} from "vuetify/locale";
 
 
 const apiUrl = 'http://localhost:5000';
@@ -18,6 +17,7 @@ const step = ref(0);
 const file_recognition_loading = ref(false);
 const fileHash = ref(null);
 const recognitionResult = ref("");
+const originalText = ref("");
 const recognitionTokenizedResult = ref([]);
 const files = ref(null);
 const selected_language = ref({state: 'English', abbr: 'en'})
@@ -29,35 +29,6 @@ const available_language = [
   {state: 'Spanish', abbr: 'es'},
   {state: 'Russian', abbr: 'ru'},
 ]
-
-// step 2
-// on watch the selected word
-const selectedWord = ref(null);
-const wikipediaResult = ref(null);
-watch(selectedWord, (newValue) => {
-  fetchWikipedia(newValue);
-});
-
-// step 3
-const summarizationResult = ref(null);
-const hideQADrawer = ref(true);
-
-const fetchWikipedia = debounce((word) => {
-  if (word) {
-    axios.get(apiUrl + '/wikipedia', {
-      params: {
-        keyword: word.text
-      }
-    }).then(response => {
-      wikipediaResult.value = response.data;
-    }).catch(error => {
-      console.error(error);
-    });
-  }
-}, 1000);
-
-// QA
-const qaList = ref([]);
 
 function submitFile() {
   file_recognition_loading.value = true;
@@ -72,6 +43,7 @@ function submitFile() {
     summarizationResult.value = null;
     if (response.data.status === 'success') {
       recognitionResult.value = response.data.recognition_result.text;
+      originalText.value = response.data.recognition_result.original_text;
       recognitionTokenizedResult.value = response.data.recognition_result.tokens;
       fileHash.value = response.data.hash;
     }
@@ -81,6 +53,35 @@ function submitFile() {
     file_recognition_loading.value = false;
   });
 }
+
+// step 2
+// on watch the selected word
+const selectedWord = ref(null);
+const wikipediaResult = ref(null);
+watch(selectedWord, (newValue) => {
+  fetchWikipedia(newValue);
+});
+const fetchWikipedia = debounce((word) => {
+  if (word) {
+    axios.get(apiUrl + '/wikipedia', {
+      params: {
+        keyword: word.text
+      }
+    }).then(response => {
+      wikipediaResult.value = response.data;
+    }).catch(error => {
+      console.error(error);
+    });
+  }
+}, 1000);
+
+// step 3
+const summarizationResult = ref(null);
+const hideQADrawer = ref(true);
+
+
+// QA
+const qaList = ref([]);
 
 function generateSummary() {
   axios.post(apiUrl + '/summarize', {
@@ -170,7 +171,20 @@ function sendQuestion() {
           <v-card-text class="flex-grow-1" style="overflow-y: auto">
             <compromise-text-box :words="recognitionTokenizedResult" v-model="selectedWord" v-if="step === 1"/>
             <div v-else>
-              {{ recognitionResult }}
+              <v-card v-if="originalText">
+                {{ originalText }}
+              </v-card>
+              <v-card v-if="originalText" class="mt-4">
+                <v-card-title>
+                  Translated Result
+                </v-card-title>
+                <v-card-text>
+                  {{ recognitionResult }}
+                </v-card-text>
+              </v-card>
+              <div v-else>
+                {{ recognitionResult }}
+              </div>
             </div>
           </v-card-text>
           <v-card-actions>

@@ -2,7 +2,9 @@ import librosa
 from transformers import WhisperProcessor, WhisperForConditionalGeneration
 from datasets import Audio, load_dataset
 import soundfile as sf
+from log import new_logger
 
+logger = new_logger("ASR")
 
 def translate_audio_samples(dataset, num_samples, language="japanese"):
     processor = WhisperProcessor.from_pretrained("openai/whisper-small")
@@ -79,44 +81,54 @@ def process_language(language_code, language_name, num_samples=10):
     transcribe_result = transcribe_foreign_audio(ds, num_samples, language=language_name)
     return translate_result, transcribe_result
 
+
 def transcribe_audio_for_custom_data(file_path, language="english"):
-    print("Loading audio file...")
+    logger.info("Loading audio file...")
 
     audio, sr = sf.read(file_path)
     if sr != 16000:
-        print(f"Resampling from {sr} Hz to 16000 Hz...")
+        logger.info(f"Resampling from {sr} Hz to 16000 Hz...")
         audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
         sr = 16000
 
-    print("Loading model and processor...")
+    logger.info("Loading model and processor...")
     processor = WhisperProcessor.from_pretrained("openai/whisper-small")
     model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
 
     task_type = 'translate' if language != 'english' else 'transcribe'
-    print(f"Preparing to {task_type}...")
+    logger.info(f"Preparing to {task_type}...")
 
     if language != "english":
         forced_decoder_ids = processor.get_decoder_prompt_ids(language=language, task="translate")
     else:
         forced_decoder_ids = None
 
-    print("Processing audio...")
+    logger.info("Processing audio...")
     input_features = processor(audio, sampling_rate=sr, return_tensors="pt").input_features
 
-    print("Generating native transcription...")
+    logger.info("Generating native transcription...")
     native_transcription_ids = model.generate(input_features)
     native_transcription = processor.batch_decode(native_transcription_ids, skip_special_tokens=True)
 
     if language != "english":
-        print("Generating translation...")
+        logger.info("Generating translation...")
         translation_ids = model.generate(input_features, forced_decoder_ids=forced_decoder_ids)
         translation = processor.batch_decode(translation_ids, skip_special_tokens=True)
-        print("Native Transcription: ", native_transcription[0])
-        print("Translation: ", translation[0])
-        return native_transcription[0], translation[0]
+        logger.info("Native Transcription: ", native_transcription[0])
+        logger.info("Translation: ", translation[0])
+        return {
+            "native_transcription": native_transcription[0],
+            "translation": translation[0],
+            "is_translation": True
+        }
     else:
-        print("Native Transcription: ", native_transcription[0])
-        return native_transcription[0]
+        logger.info("Native Transcription: ", native_transcription[0])
+        return {
+            "native_transcription": native_transcription[0],
+            "is_translation": False
+        }
+
+
 def main():
     languages = {
         "ja": "japanese",
@@ -127,6 +139,7 @@ def main():
     }
     file_path = 'audio_data/fr/common_voice_fr_33153455.mp3'
     transcribe_audio_for_custom_data(file_path, language="french")
+
 
 if __name__ == "__main__":
     main()

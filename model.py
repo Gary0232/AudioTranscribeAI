@@ -1,19 +1,42 @@
 #!/usr/bin/env python
 # -*-coding:utf-8 -*-
 import spacy
+from log import new_logger
+from asr_for_custom_data import transcribe_audio_for_custom_data
+from llm import text_summarization, question_answer
+
+logger = new_logger("model")
+
 
 nlp = spacy.load('en_core_web_sm')
 
 
-def audio_recognition(file):
-    result = """
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer leo nisl, bibendum sed lectus nec, laoreet finibus diam. Suspendisse commodo est nec commodo fermentum. Pellentesque facilisis finibus elementum. Aenean ultrices, justo id luctus scelerisque, lorem dui egestas purus, vitae feugiat est ipsum a nisi. Maecenas malesuada tincidunt diam vel suscipit. Fusce laoreet euismod velit. Donec pulvinar sagittis felis at tristique. Praesent massa diam, auctor a enim vel, tristique commodo justo. Quisque rutrum aliquam enim, at mattis ipsum ultricies eget. Donec at nibh risus. Nunc consequat convallis libero, sit amet pulvinar quam porttitor sed.
-Morbi tempor lacinia mi id accumsan. Nullam eget lacus mi. Aenean sed erat eu risus pellentesque malesuada. Curabitur sit amet eleifend quam, nec ultrices ante. Curabitur porttitor in tellus vitae sagittis. Praesent faucibus elementum est, eget pellentesque ante egestas eu. Suspendisse non convallis neque. Nunc sit amet ex vitae nisl placerat scelerisque. Mauris volutpat metus sed molestie porta. Mauris facilisis viverra erat, auctor cursus libero ullamcorper eu. Donec sagittis efficitur velit et volutpat.
-In turpis orci, pharetra at tortor tincidunt, varius efficitur nunc. Cras varius auctor turpis, eget cursus magna iaculis et. Pellentesque egestas sapien justo, quis fermentum sapien euismod id. Etiam quis justo ex. In id purus ipsum. Aenean volutpat orci tellus, non cursus justo tempus eget. Phasellus aliquam justo et mi malesuada lobortis. Proin lacus est, malesuada id pulvinar quis, posuere ac lorem. Nulla non rutrum dui, id faucibus lectus. Curabitur tempor lacus vitae volutpat imperdiet.
-Duis aliquet pharetra diam ac faucibus. Nunc ac semper quam. Aenean sit amet sem sit amet enim vestibulum sagittis. Aenean eu suscipit ex. Integer suscipit magna lectus, ut aliquam nunc dapibus sit amet. Suspendisse potenti. Sed neque nulla, volutpat vitae dictum in, accumsan nec nisi. Etiam aliquam congue tellus a ullamcorper. Nunc vel dolor venenatis, elementum arcu a, euismod dolor. Vivamus hendrerit arcu id sagittis iaculis.
-Nulla viverra feugiat tortor et commodo. Morbi efficitur quis elit sed pulvinar. Nullam non faucibus nisl. Aliquam ultricies suscipit elit, nec pulvinar ex venenatis id. Praesent egestas enim non dolor malesuada convallis. Cras nibh elit, condimentum non convallis a, pharetra vel diam. Quisque vel ante pretium, gravida ipsum nec, pretium erat.
-""".strip()
-    doc = nlp(result)
+# fr_nlp = spacy.load('fr_core_news_sm')
+# de_nlp = spacy.load('de_core_news_sm')
+# ja_nlp = spacy.load('ja_core_news_sm')
+# ru_nlp = spacy.load('ru_core_news_sm')
+# es_nlp = spacy.load('es_core_news_sm')
+#
+# nlp_map = {
+#     "english": en_nlp,
+#     "french": fr_nlp,
+#     "german": de_nlp,
+#     "japanese": ja_nlp,
+#     "russian": ru_nlp,
+#     "spanish": es_nlp
+# }
+
+
+def audio_recognition(audio_filepath, language_name):
+    result = transcribe_audio_for_custom_data(audio_filepath, language=language_name)
+    if not result:
+        raise Exception("Audio recognition failed")
+    en_script = result["native_transcription"] if not result["is_translation"] else result["translation"]
+    original_language = result.get("native_transcription", None)
+    # nlp = nlp_map.get(language_name)
+    # if not nlp:
+    #     raise Exception("Unsupported language")
+    doc = nlp(en_script)
     tokens = []
     for token in doc:
         if token.whitespace_:
@@ -21,4 +44,12 @@ Nulla viverra feugiat tortor et commodo. Morbi efficitur quis elit sed pulvinar.
             tokens.append({'text': ' ', 'pos': 'SPACE'})
         else:
             tokens.append({'text': token.text, 'pos': token.pos_})
-    return {"text": result, "tokens": tokens}
+    return {"text": en_script, "tokens": tokens, "original_text": original_language}
+
+
+def summarization(text):
+    return text_summarization(text)
+
+
+def qa(input_text):
+    return question_answer(input_text)
