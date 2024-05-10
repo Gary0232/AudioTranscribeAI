@@ -18,7 +18,7 @@ const file_recognition_loading = ref(false);
 const fileHash = ref(null);
 const recognitionResult = ref("");
 const originalText = ref("");
-const isTranslated= ref(false);
+const isTranslation= ref(false);
 const recognitionTokenizedResult = ref([]);
 const files = ref(null);
 const selected_language = ref({state: 'English', abbr: 'en'})
@@ -45,7 +45,7 @@ function submitFile() {
     if (response.data.status === 'success') {
       recognitionResult.value = response.data.recognition_result.text;
       originalText.value = response.data.recognition_result.original_text;
-      isTranslated.value = response.data.recognition_result.translated;
+      isTranslation.value = response.data.recognition_result.is_translation;
       recognitionTokenizedResult.value = response.data.recognition_result.tokens;
       fileHash.value = response.data.hash;
     }
@@ -179,7 +179,7 @@ function sendQuestion() {
               <v-card v-if="originalText" elevation="0">
                 {{ originalText }}
               </v-card>
-              <v-card v-if="isTranslated" class="mt-4">
+              <v-card v-if="isTranslation" class="mt-4">
                 <v-card-title>
                   Translated Result
                 </v-card-title>
@@ -220,15 +220,16 @@ function sendQuestion() {
           </v-card-text>
           <v-list class="flex-grow-1" v-else-if="wikipediaResult !== null" style="overflow-y: auto">
             <v-list-item>
+              <span class="font-weight-bold">Dictionary Definition: </span>{{ wikipediaResult.definition }}
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item v-if="wikipediaResult.title">
               <span class="font-weight-bold">Wikipedia Title: </span>{{ wikipediaResult.title }}
             </v-list-item>
-            <v-list-item>
-              <span class="font-weight-bold">Definition: </span>{{ wikipediaResult.definition }}
-            </v-list-item>
-            <v-list-item>
+            <v-list-item v-if="wikipediaResult.summary">
               <span class="font-weight-bold">Wikipedia Summary: </span>{{ wikipediaResult.summary }}...
             </v-list-item>
-            <v-list-item>
+            <v-list-item v-if="wikipediaResult.url">
               <span class="font-weight-bold">Wikipedia Url: </span> <a :href="wikipediaResult.url" target="_blank">{{ wikipediaResult.url }}</a>
             </v-list-item>
             <!--            <v-row class="ma-0 pa-0">-->
