@@ -4,6 +4,8 @@ from datasets import Audio, load_dataset
 import soundfile as sf
 from log import new_logger
 from pydub import AudioSegment
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
 
 logger = new_logger("ASR")
 
@@ -58,25 +60,33 @@ def transcribe_audio_chunk(audio_chunk, sr=16000, language="english"):
 
     return transcription[0]
 
-def transcribe_long_audio(audio_path, chunk_length_s=30, language="english"):
+def transcribe_long_audio(audio_path, chunk_length_s=30, language="english", max_workers=8):
     """
     Transcribe long audio files by splitting them into smaller chunks.
     Args:
         audio_path: Path to the audio file
         chunk_length_s: Length of each chunk in seconds (default 30s = 30 seconds)
         language: Language for transcription or translation
+        max_workers: Number of threads to use for parallel processing
     Returns:
         Full transcribed text
     """
     chunks = split_audio(audio_path, chunk_length_s)
-    full_transcription = []
+    full_transcription = [""] * len(chunks)
 
-    print(f"Transcribing audio in {chunk_length_s}-second chunks...")
+    print(f"Transcribing audio in {chunk_length_s}-second chunks using {max_workers} threads...")
 
-    for i, chunk in enumerate(chunks):
-        print(f"Transcribing chunk {i + 1}/{len(chunks)}")
-        transcribed_text = transcribe_audio_chunk(chunk, language=language)
-        full_transcription.append(transcribed_text)
+    def transcribe_chunk_wrapper(index, chunk):
+        return index, transcribe_audio_chunk(chunk, language=language)
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(transcribe_chunk_wrapper, i, chunk): i for i, chunk in enumerate(chunks)}
+
+        with tqdm(total=len(futures), desc="Transcribing Chunks", unit="chunk") as pbar:
+            for future in as_completed(futures):
+                index, transcribed_text = future.result()
+                full_transcription[index] = transcribed_text
+                pbar.update(1)
 
     return " ".join(full_transcription)
 
