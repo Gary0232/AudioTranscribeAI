@@ -185,9 +185,6 @@ function sendQuestion() {
                   {{ recognitionResult }}
                 </v-card-text>
               </v-card>
-              <div v-else>
-                {{ recognitionResult }}
-              </div>
             </div>
           </v-card-text>
           <v-card-actions>
