@@ -13,6 +13,7 @@ logger = new_logger("ASR")
 processor = WhisperProcessor.from_pretrained("openai/whisper-small")
 model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
 
+
 def split_audio(audio_path, chunk_length_s=30):
     """
     Split audio into chunks of specified length.
@@ -26,6 +27,7 @@ def split_audio(audio_path, chunk_length_s=30):
     chunk_length_ms = chunk_length_s * 1000  # Convert to milliseconds
     chunks = [audio[i:i + chunk_length_ms] for i in range(0, len(audio), chunk_length_ms)]
     return chunks
+
 
 def transcribe_audio_chunk(audio_chunk, sr=16000, language="english"):
     """
@@ -60,6 +62,7 @@ def transcribe_audio_chunk(audio_chunk, sr=16000, language="english"):
 
     return transcription[0]
 
+
 def transcribe_long_audio(audio_path, chunk_length_s=30, language="english", max_workers=8):
     """
     Transcribe long audio files by splitting them into smaller chunks.
@@ -90,6 +93,7 @@ def transcribe_long_audio(audio_path, chunk_length_s=30, language="english", max
 
     return " ".join(full_transcription)
 
+
 def transcribe_audio_for_custom_data(file_path, language="english"):
     logger.info("Loading audio file...")
 
@@ -105,13 +109,15 @@ def transcribe_audio_for_custom_data(file_path, language="english"):
     if language != "english":
         return {
             "native_transcription": transcribed_text,
-            "is_translation": True
+            "is_translation": True,
+            "translation": "Placeholder translation text"
         }
     else:
         return {
             "native_transcription": transcribed_text,
             "is_translation": False
         }
+
 
 def main():
     languages = {
@@ -125,6 +131,7 @@ def main():
     file_path = '../audio_data/fr/common_voice_fr_33153455.mp3'
     result = transcribe_audio_for_custom_data(file_path, language="french")
     logger.info(result)
+
 
 if __name__ == "__main__":
     main()
