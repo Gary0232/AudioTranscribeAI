@@ -1,20 +1,22 @@
 from PyDictionary import PyDictionary
 dictionary = PyDictionary()
+
 def get_local_definition(noun):
     try:
         meaning = dictionary.meaning(noun)
         if meaning:
-            # Extracting the first definition of the first meaning type
-            first_meaning_type = next(iter(meaning.values()))
-            return first_meaning_type[0]
+            all_definitions = []
+            for pos, definitions in meaning.items():
+                for definition in definitions:
+                    all_definitions.append(f"{pos}: {definition}")
+            return "\n".join(all_definitions)
         else:
-            return 'No definition found.'
+            return 'No definitions found.'
     except Exception as e:
-        return f'Error retrieving definition: {str(e)}'
-
+        return f'Error retrieving definitions: {str(e)}'
 
 if __name__ == '__main__':
     # Example usage
     keyword = "Wine"
-    meaning = get_local_definition(keyword)
-    print(f"meaning: {meaning}")
+    all_meanings = get_all_definitions(keyword)
+    print(f"All meanings of '{keyword}':\n{all_meanings}")
