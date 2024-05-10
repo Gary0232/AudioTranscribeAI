@@ -7,7 +7,6 @@ from llm.llm import text_summarization, question_answer
 
 logger = new_logger("model")
 
-
 nlp = spacy.load('en_core_web_sm')
 
 
