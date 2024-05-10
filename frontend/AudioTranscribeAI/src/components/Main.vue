@@ -18,6 +18,7 @@ const file_recognition_loading = ref(false);
 const fileHash = ref(null);
 const recognitionResult = ref("");
 const originalText = ref("");
+const isTranslated= ref(false);
 const recognitionTokenizedResult = ref([]);
 const files = ref(null);
 const selected_language = ref({state: 'English', abbr: 'en'})
@@ -44,6 +45,7 @@ function submitFile() {
     if (response.data.status === 'success') {
       recognitionResult.value = response.data.recognition_result.text;
       originalText.value = response.data.recognition_result.original_text;
+      isTranslated.value = response.data.recognition_result.translated;
       recognitionTokenizedResult.value = response.data.recognition_result.tokens;
       fileHash.value = response.data.hash;
     }
@@ -174,10 +176,10 @@ function sendQuestion() {
           <v-card-text class="flex-grow-1" style="overflow-y: auto">
             <compromise-text-box :words="recognitionTokenizedResult" v-model="selectedWord" v-if="step === 1"/>
             <div v-else>
-              <v-card v-if="originalText">
+              <v-card v-if="originalText" elevation="0">
                 {{ originalText }}
               </v-card>
-              <v-card v-if="originalText" class="mt-4">
+              <v-card v-if="isTranslated" class="mt-4">
                 <v-card-title>
                   Translated Result
                 </v-card-title>
