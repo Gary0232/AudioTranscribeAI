@@ -44,7 +44,10 @@ def audio_recognition(audio_filepath, language_name):
             tokens.append({'text': ' ', 'pos': 'SPACE'})
         else:
             tokens.append({'text': token.text, 'pos': token.pos_})
-    return {"text": en_script, "tokens": tokens, "original_text": original_language}
+    return {"text": en_script,
+            "tokens": tokens,
+            "original_text": original_language,
+            "is_translation": result["is_translation"]}
 
 
 def summarization(text):
