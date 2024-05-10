@@ -3,12 +3,15 @@ import mwparserfromhell
 from PIL import Image
 
 # Function to retrieve information from Wikipedia
-
 def get_wikipedia_info(query, lang='en'):
     try:
         # Set the Wikipedia site language and initialize
         site = pywikibot.Site(lang, "wikipedia")
         page = pywikibot.Page(site, query)
+
+        # If the page is a redirect, follow it to the target page
+        if page.isRedirectPage():
+            page = page.getRedirectTarget()
 
         # Retrieve the page title, URL, and text
         title = page.title()
@@ -26,19 +29,19 @@ def get_wikipedia_info(query, lang='en'):
             image_page = pywikibot.FilePage(site, image_title)
             image_url = image_page.full_url()
             images_url.append(image_url)
+
         # Extract the first 500 characters of text as a summary
-        summary = parsed.strip_code().strip()[0:500]
+        summary = parsed.strip_code().strip()[:5000]
 
         # Return the title, URL, summary, and images
         return title, url, summary, images_url
+
     except pywikibot.exceptions.PageRelatedError as e:
         # Handle errors, such as missing pages
         return f"Error: {e}", None, None, None
-
 
 if __name__ == '__main__':
     # Example usage
     keyword = "Wine"
     title, url, summary, image = get_wikipedia_info(keyword)
-    print(f"title: {title}\n url: {url}\n summary: {summary}\n image: {image}\n")
-
+    print(f"title: {title}\nurl: {url}\nsummary: {summary}\nimages: {image}\n")
