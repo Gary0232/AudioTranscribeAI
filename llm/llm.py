@@ -14,7 +14,7 @@ import pdb
 model_name = 'TinyLlama/TinyLlama-1.1B-Chat-v1.0'
 # model_name = 'meta-llama/Llama-2-7b-chat-hf'
 
-pipe = pipeline("text-generation", model=model_name, torch_dtype=torch.bfloat16, device_map="auto")
+pipe = pipeline("text-generation", model=model_name, torch_dtype=torch.float16, device_map="auto")
 
 
 def question_answer(input_text, question_text, prompt_template="background text: {}, question: {}"):
