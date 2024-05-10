@@ -6,12 +6,13 @@ import ffmpeg
 from flask import Flask, request, jsonify
 from keyword_wiki_retrieval.wiki_retrieval import get_wikipedia_info
 from model import audio_recognition, qa, summarization
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from sqlalchemy import String, Column, Integer, Float, Text, ForeignKey, DateTime, JSON, ARRAY
 
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
+
+cors = CORS(app)
 
 FILE_UPLOAD_FOLDER = 'uploads'
 ALLOWED_MIME_TYPES = ['audio/wav', 'audio/mpeg', 'audio/ogg', 'audio/x-flac', 'video/mp4']
@@ -41,6 +42,7 @@ if not os.path.exists(FILE_UPLOAD_FOLDER):
 
 
 @app.route("/file_upload", methods=['POST'])
+@cross_origin()
 def api_media_recognition():
     # Get the file from the request
     file = request.files.get('file')
@@ -118,6 +120,7 @@ def api_media_recognition():
 
 
 @app.route("/wikipedia", methods=['GET'])
+@cross_origin()
 def api_wikipedia():
     keyword = request.args.get('keyword')
     print(keyword)
@@ -132,6 +135,7 @@ def api_wikipedia():
 
 
 @app.route("/summarize", methods=['POST'])
+@cross_origin()
 def api_text_summarization():
     # get the text from the request
     text = request.json.get('text')
@@ -153,6 +157,7 @@ def api_text_summarization():
 
 
 @app.route("/qa", methods=['POST'])
+@cross_origin()
 def api_qa():
     question = request.json.get('question')
     file_hash = request.json.get('hash')
