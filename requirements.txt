@@ -16,4 +16,5 @@ datasets~=2.19.1
 librosa~=0.10.2
 soundfile~=0.12.1
 ffmpeg-python~=0.2.0
+PyDictionary~=2.0.1
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl

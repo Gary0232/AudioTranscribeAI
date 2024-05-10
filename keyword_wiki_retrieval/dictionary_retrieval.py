@@ -11,3 +11,10 @@ def get_local_definition(noun):
             return 'No definition found.'
     except Exception as e:
         return f'Error retrieving definition: {str(e)}'
+
+
+if __name__ == '__main__':
+    # Example usage
+    keyword = "Wine"
+    meaning = get_local_definition(keyword)
+    print(f"meaning: {meaning}")

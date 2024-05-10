@@ -4,6 +4,8 @@ import mimetypes
 import hashlib
 import ffmpeg
 from flask import Flask, request, jsonify
+
+from keyword_wiki_retrieval.dictionary_retrieval import get_local_definition
 from keyword_wiki_retrieval.wiki_retrieval import get_wikipedia_info
 from model import audio_recognition, qa, summarization
 from flask_cors import CORS, cross_origin
@@ -127,12 +129,17 @@ def api_wikipedia():
     if not keyword:
         return jsonify({"status": "error", "message": "No keyword provided"})
     # process the keyword
-    # title, url, parsed = get_wikipedia_info(keyword)
+    # get wikipedia info
+    title, url, summary, images_url = get_wikipedia_info(keyword)
+    print(f"keyword: {keyword},\n url: {url},\n summary: {summary},\n images_url:"
+          f" {images_url}\n")
+    # get local dictionary meaning
+    meaning = get_local_definition(keyword)
+    print(f"local meaning: {meaning}\n")
     return jsonify({
         "status": "success",
         "wikipedia_result": keyword
     })
-
 
 @app.route("/summarize", methods=['POST'])
 @cross_origin()
