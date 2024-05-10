@@ -68,7 +68,7 @@ const fetchWikipedia = debounce((word) => {
         keyword: word.text
       }
     }).then(response => {
-      wikipediaResult.value = response.data;
+      wikipediaResult.value = response.data.wikipedia_result;
     }).catch(error => {
       console.error(error);
     });
@@ -96,6 +96,7 @@ function generateSummary() {
 
 const question = ref(null);
 const qaLoading = ref(false);
+
 function sendQuestion() {
   const questionData = question.value;
   if (!questionData) {
@@ -133,8 +134,9 @@ function sendQuestion() {
             Task 1: Automatic Speech Recognition
           </v-card-title>
           <v-card-text>
+            <!--允许上传txt文件-->
             <v-file-input
-              accept="audio/*, video/mp4"
+              accept="audio/*, video/mp4, text/plain"
               label="Upload the audio/video file here"
               placeholder="No file chosen"
               prepend-icon="mdi-multimedia"
@@ -217,9 +219,48 @@ function sendQuestion() {
           <v-card-text class="flex-grow-1" v-if="selectedWord == null">
             Select a word to fetch Wikipedia information
           </v-card-text>
-          <v-card-text class="flex-grow-1" v-else-if="wikipediaResult !== null">
-            {{ wikipediaResult }}
-          </v-card-text>
+          <v-list class="flex-grow-1" v-else-if="wikipediaResult !== null" style="overflow-y: auto">
+            <v-list-item>
+              <span class="font-weight-bold">Title: </span>{{ wikipediaResult.title }}
+            </v-list-item>
+            <v-list-item>
+              <span class="font-weight-bold">Definition: </span>{{ wikipediaResult.definition }}
+            </v-list-item>
+            <v-list-item>
+              <span class="font-weight-bold">Summary: </span>{{ wikipediaResult.summary }}...
+            </v-list-item>
+            <v-list-item>
+              <span class="font-weight-bold">Wikipedia Url: </span> <a :href="wikipediaResult.url" target="_blank">{{ wikipediaResult.url }}</a>
+            </v-list-item>
+            <!--            <v-row class="ma-0 pa-0">-->
+<!--              <v-col-->
+<!--                v-for="n in wikipediaResult.images_url"-->
+<!--                :key="n"-->
+<!--                class="d-flex child-flex ma-0 pa-0"-->
+<!--                cols="4"-->
+<!--              >-->
+<!--                <v-img-->
+<!--                  :src="n"-->
+<!--                  aspect-ratio="1"-->
+<!--                  class="bg-grey-lighten-2"-->
+<!--                  cover-->
+<!--                >-->
+<!--                  <template v-slot:placeholder>-->
+<!--                    <v-row-->
+<!--                      align="center"-->
+<!--                      class="fill-height ma-0"-->
+<!--                      justify="center"-->
+<!--                    >-->
+<!--                      <v-progress-circular-->
+<!--                        color="grey-lighten-5"-->
+<!--                        indeterminate-->
+<!--                      ></v-progress-circular>-->
+<!--                    </v-row>-->
+<!--                  </template>-->
+<!--                </v-img>-->
+<!--              </v-col>-->
+<!--            </v-row>-->
+          </v-list>
           <v-card-text v-else class="flex-grow-1 d-flex flex-column justify-center align-center">
             <v-progress-circular
               indeterminate

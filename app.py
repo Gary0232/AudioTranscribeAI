@@ -14,10 +14,11 @@ from sqlalchemy import String, Column, Integer, Float, Text, ForeignKey, DateTim
 
 app = Flask(__name__)
 
-cors = CORS(app)
+cors = CORS(app, resources=r'/*', supports_credentials=True)
 
 FILE_UPLOAD_FOLDER = 'uploads'
-ALLOWED_MIME_TYPES = ['audio/wav', 'audio/mpeg', 'audio/ogg', 'audio/x-flac', 'video/mp4']
+
+ALLOWED_MIME_TYPES = ['audio/wav', 'audio/mpeg', 'audio/ogg', 'audio/x-flac', 'video/mp4', "text/plain"]
 
 base_bath = os.path.dirname(__file__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(base_bath, 'app.db')
@@ -30,6 +31,7 @@ class ProcessedFile(db.Model):
     id = db.Column(Integer, primary_key=True)
     name = db.Column(String(255), nullable=False)
     file_path = db.Column(Text, nullable=False)
+    # file_type = db.Column(String(255), nullable=False)
     audio_recognition_result = db.Column(JSON)
     text_summarization_result = db.Column(Text)
 
@@ -59,15 +61,15 @@ def api_media_recognition():
     }
 
     if not file:
-        return jsonify({"status": "error", "message": "No file provided"}), 400
+        return jsonify({"status": "error", "message": "No file provided"})
     if not language or language not in languages:
-        return jsonify({"status": "error", "message": "Invalid language"}), 400
+        return jsonify({"status": "error", "message": "Invalid language"})
     language_name = languages.get(language)
 
     # Check the file type using mimetypes
     mime_type, encoding = mimetypes.guess_type(file.filename)
     if mime_type not in ALLOWED_MIME_TYPES:
-        return jsonify({"status": "error", "message": "Invalid file type"}), 400
+        return jsonify({"status": "error", "message": "Invalid file type"})
 
     # Generate a hash value as the filename
     hash_value = hashlib.md5(file.read()).hexdigest()
@@ -96,7 +98,7 @@ def api_media_recognition():
             # Convert other audio formats to mp3
             ffmpeg.input(temp_file_path).output(audio_filepath, codec='libmp3lame').run(overwrite_output=True)
     except Exception as e:
-        return jsonify({"status": "error", "message": f"Audio extraction failed: {e}"}), 500
+        return jsonify({"status": "error", "message": f"Audio extraction failed: {e}"})
     finally:
         # Remove the temporary video file
         os.remove(temp_file_path)
@@ -125,20 +127,20 @@ def api_media_recognition():
 @cross_origin()
 def api_wikipedia():
     keyword = request.args.get('keyword')
-    print(keyword)
     if not keyword:
         return jsonify({"status": "error", "message": "No keyword provided"})
-    # process the keyword
-    # get wikipedia info
     title, url, summary, images_url = get_wikipedia_info(keyword)
-    print(f"keyword: {keyword},\n url: {url},\n summary: {summary},\n images_url:"
-          f" {images_url}\n")
     # get local dictionary meaning
     meaning = get_local_definition(keyword)
-    print(f"local meaning: {meaning}\n")
     return jsonify({
         "status": "success",
-        "wikipedia_result": keyword
+        "wikipedia_result": {
+            "title": title,
+            "url": url,
+            "summary": summary,
+            "images_url": images_url,
+            "definition": meaning
+        }
     })
 
 @app.route("/summarize", methods=['POST'])

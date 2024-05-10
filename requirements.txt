@@ -1,5 +1,7 @@
 pywikibot~=9.1.2
 nltk~=3.8.1
+git+https://github.com/yeahwhat-mc/goslate#egg=goslate
+PyDictionary~=2.0.1
 mwparserfromhell~=0.6.6
 flask~=3.0.3
 flask-cors~=4.0.1
@@ -16,5 +18,4 @@ datasets~=2.19.1
 librosa~=0.10.2
 soundfile~=0.12.1
 ffmpeg-python~=0.2.0
-PyDictionary~=2.0.1
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
