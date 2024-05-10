@@ -3,132 +3,105 @@ from transformers import WhisperProcessor, WhisperForConditionalGeneration
 from datasets import Audio, load_dataset
 import soundfile as sf
 from log import new_logger
+from pydub import AudioSegment
 
 logger = new_logger("ASR")
 
+# Initialize the processor and model globally
+processor = WhisperProcessor.from_pretrained("openai/whisper-small")
+model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
 
-def translate_audio_samples(dataset, num_samples, language="japanese"):
-    processor = WhisperProcessor.from_pretrained("openai/whisper-small")
-    model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
-    forced_decoder_ids = processor.get_decoder_prompt_ids(language=language, task="translate")
-    dataset = dataset.cast_column("audio", Audio(sampling_rate=16_000))
-    transcriptions = []
+def split_audio(audio_path, chunk_length_s=30):
+    """
+    Split audio into chunks of specified length.
+    Args:
+        audio_path: Path to the audio file
+        chunk_length_s: Length of each chunk in seconds
+    Returns:
+        List of audio chunks
+    """
+    audio = AudioSegment.from_file(audio_path)
+    chunk_length_ms = chunk_length_s * 1000  # Convert to milliseconds
+    chunks = [audio[i:i + chunk_length_ms] for i in range(0, len(audio), chunk_length_ms)]
+    return chunks
 
-    for sample in dataset.take(num_samples):
-        input_speech = sample["audio"]
-        input_features = processor(input_speech["array"], sampling_rate=input_speech["sampling_rate"],
-                                   return_tensors="pt").input_features
-        predicted_ids = model.generate(input_features, forced_decoder_ids=forced_decoder_ids)
-        transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)
-        transcriptions.append(transcription)
+def transcribe_audio_chunk(audio_chunk, sr=16000, language="english"):
+    """
+    Transcribe a single audio chunk using Whisper.
+    Args:
+        audio_chunk: An audio segment chunk
+        sr: Sampling rate (default is 16000 Hz)
+        language: Language for transcription or translation
+    Returns:
+        Transcribed or translated text
+    """
+    task_type = 'translate' if language != 'english' else 'transcribe'
 
-    return transcriptions
+    if language != "english":
+        forced_decoder_ids = processor.get_decoder_prompt_ids(language=language, task=task_type)
+    else:
+        forced_decoder_ids = None
 
+    # Export audio chunk to temporary file
+    chunk_path = "temp_chunk.wav"
+    audio_chunk.export(chunk_path, format="wav")
 
-def transcribe_audio(sample, processor, model):
-    input_features = processor(sample["array"], sampling_rate=sample["sampling_rate"],
-                               return_tensors="pt").input_features
-    predicted_ids = model.generate(input_features)
+    # Load the chunk into memory
+    sample, sr = librosa.load(chunk_path, sr=sr)
+
+    # Process the audio sample
+    input_features = processor(sample, sampling_rate=sr, return_tensors="pt").input_features
+
+    # Generate transcription or translation
+    predicted_ids = model.generate(input_features, forced_decoder_ids=forced_decoder_ids)
     transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)
 
-    return transcription
+    return transcription[0]
 
+def transcribe_long_audio(audio_path, chunk_length_s=30, language="english"):
+    """
+    Transcribe long audio files by splitting them into smaller chunks.
+    Args:
+        audio_path: Path to the audio file
+        chunk_length_s: Length of each chunk in seconds (default 30s = 30 seconds)
+        language: Language for transcription or translation
+    Returns:
+        Full transcribed text
+    """
+    chunks = split_audio(audio_path, chunk_length_s)
+    full_transcription = []
 
-def transcribe_audio_samples(dataset, num_samples):
-    processor = WhisperProcessor.from_pretrained("openai/whisper-small")
-    model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
-    model.config.forced_decoder_ids = None
+    print(f"Transcribing audio in {chunk_length_s}-second chunks...")
 
-    transcriptions = []
+    for i, chunk in enumerate(chunks):
+        print(f"Transcribing chunk {i + 1}/{len(chunks)}")
+        transcribed_text = transcribe_audio_chunk(chunk, language=language)
+        full_transcription.append(transcribed_text)
 
-    for sample in dataset.take(num_samples):
-        input_features = processor(sample["audio"]["array"], sampling_rate=sample["audio"]["sampling_rate"],
-                                   return_tensors="pt").input_features
-
-        predicted_ids = model.generate(input_features)
-        transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)
-        transcriptions.append(transcription[0])
-
-    return transcriptions
-
-
-def transcribe_foreign_audio(dataset, num_samples, language="japanese"):
-    processor = WhisperProcessor.from_pretrained("openai/whisper-small")
-    model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
-
-    forced_decoder_ids = processor.get_decoder_prompt_ids(language=language, task="transcribe")
-
-    dataset = dataset.cast_column("audio", Audio(sampling_rate=16_000))
-
-    transcriptions = []
-
-    for sample in dataset.take(num_samples):
-        input_features = processor(sample["audio"]["array"], sampling_rate=sample["audio"]["sampling_rate"],
-                                   return_tensors="pt").input_features
-
-        predicted_ids = model.generate(input_features, forced_decoder_ids=forced_decoder_ids)
-
-        transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)
-        transcriptions.append(transcription[0])
-
-    return transcriptions
-
-
-def process_language(language_code, language_name, num_samples=10):
-    ds = load_dataset("mozilla-foundation/common_voice_11_0", language_code, split="test", streaming=True,
-                      trust_remote_code=True)
-
-    translate_result = translate_audio_samples(ds, num_samples, language=language_name)
-    transcribe_result = transcribe_foreign_audio(ds, num_samples, language=language_name)
-    return translate_result, transcribe_result
-
+    return " ".join(full_transcription)
 
 def transcribe_audio_for_custom_data(file_path, language="english"):
     logger.info("Loading audio file...")
 
-    audio, sr = sf.read(file_path)
-    if sr != 16000:
-        logger.info(f"Resampling from {sr} Hz to 16000 Hz...")
-        audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
-        sr = 16000
+    chunk_length_s = 30  # 30-second chunks
+    total_duration_s = librosa.get_duration(filename=file_path)
 
-    logger.info("Loading model and processor...")
-    processor = WhisperProcessor.from_pretrained("openai/whisper-small")
-    model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
+    if total_duration_s > 2 * 60 * 60:
+        logger.error("Audio duration exceeds the maximum allowed limit of 2 hours.")
+        return {"error": "Audio duration exceeds the maximum allowed limit of 2 hours."}
 
-    task_type = 'translate' if language != 'english' else 'transcribe'
-    logger.info(f"Preparing to {task_type}...")
+    transcribed_text = transcribe_long_audio(file_path, chunk_length_s=chunk_length_s, language=language)
 
     if language != "english":
-        forced_decoder_ids = processor.get_decoder_prompt_ids(language=language, task="translate")
-    else:
-        forced_decoder_ids = None
-
-    logger.info("Processing audio...")
-    input_features = processor(audio, sampling_rate=sr, return_tensors="pt").input_features
-
-    logger.info("Generating native transcription...")
-    native_transcription_ids = model.generate(input_features)
-    native_transcription = processor.batch_decode(native_transcription_ids, skip_special_tokens=True)
-
-    if language != "english":
-        logger.info("Generating translation...")
-        translation_ids = model.generate(input_features, forced_decoder_ids=forced_decoder_ids)
-        translation = processor.batch_decode(translation_ids, skip_special_tokens=True)
-        logger.info(f"Native Transcription: {native_transcription[0]}")
-        logger.info(f"Translation: {translation[0]}")
         return {
-            "native_transcription": native_transcription[0],
-            "translation": translation[0],
+            "native_transcription": transcribed_text,
             "is_translation": True
         }
     else:
-        logger.info(f"Native Transcription: {native_transcription[0]}")
         return {
-            "native_transcription": native_transcription[0],
+            "native_transcription": transcribed_text,
             "is_translation": False
         }
-
 
 def main():
     languages = {
@@ -138,9 +111,10 @@ def main():
         "es": "spanish",
         "ru": "russian"
     }
-    file_path = '../audio_data/fr/common_voice_fr_33153455.mp3'
-    transcribe_audio_for_custom_data(file_path, language="french")
 
+    file_path = '../audio_data/fr/common_voice_fr_33153455.mp3'
+    result = transcribe_audio_for_custom_data(file_path, language="french")
+    logger.info(result)
 
 if __name__ == "__main__":
     main()
