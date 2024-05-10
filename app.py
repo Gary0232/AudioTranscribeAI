@@ -18,7 +18,7 @@ cors = CORS(app, resources=r'/*', supports_credentials=True)
 
 FILE_UPLOAD_FOLDER = 'uploads'
 
-ALLOWED_MIME_TYPES = ['audio/wav', 'audio/mpeg', 'audio/ogg', 'audio/x-flac', 'video/mp4', "text/plain"]
+ALLOWED_MIME_TYPES = ['audio/*', 'video/mp4']
 
 base_bath = os.path.dirname(__file__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(base_bath, 'app.db')

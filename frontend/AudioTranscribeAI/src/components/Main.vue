@@ -136,7 +136,7 @@ function sendQuestion() {
           <v-card-text>
             <!--允许上传txt文件-->
             <v-file-input
-              accept="audio/*, video/mp4, text/plain"
+              accept="audio/*, video/mp4"
               label="Upload the audio/video file here"
               placeholder="No file chosen"
               prepend-icon="mdi-multimedia"
