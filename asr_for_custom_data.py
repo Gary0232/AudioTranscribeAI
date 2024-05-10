@@ -6,6 +6,7 @@ from log import new_logger
 
 logger = new_logger("ASR")
 
+
 def translate_audio_samples(dataset, num_samples, language="japanese"):
     processor = WhisperProcessor.from_pretrained("openai/whisper-small")
     model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
