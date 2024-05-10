@@ -31,7 +31,6 @@ class ProcessedFile(db.Model):
     id = db.Column(Integer, primary_key=True)
     name = db.Column(String(255), nullable=False)
     file_path = db.Column(Text, nullable=False)
-    # file_type = db.Column(String(255), nullable=False)
     audio_recognition_result = db.Column(JSON)
     text_summarization_result = db.Column(Text)
 
