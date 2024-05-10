@@ -211,20 +211,20 @@ function sendQuestion() {
       <v-col cols="4" class="h-100" v-if="step === 1">
         <v-card class="fill-height d-flex flex-column">
           <v-card-title>
-            Wikipedia
+            Wikipedia & Dictionary
           </v-card-title>
           <v-card-text class="flex-grow-1" v-if="selectedWord == null">
             Select a word to fetch Wikipedia information
           </v-card-text>
           <v-list class="flex-grow-1" v-else-if="wikipediaResult !== null" style="overflow-y: auto">
             <v-list-item>
-              <span class="font-weight-bold">Title: </span>{{ wikipediaResult.title }}
+              <span class="font-weight-bold">Wikipedia Title: </span>{{ wikipediaResult.title }}
             </v-list-item>
             <v-list-item>
               <span class="font-weight-bold">Definition: </span>{{ wikipediaResult.definition }}
             </v-list-item>
             <v-list-item>
-              <span class="font-weight-bold">Summary: </span>{{ wikipediaResult.summary }}...
+              <span class="font-weight-bold">Wikipedia Summary: </span>{{ wikipediaResult.summary }}...
             </v-list-item>
             <v-list-item>
               <span class="font-weight-bold">Wikipedia Url: </span> <a :href="wikipediaResult.url" target="_blank">{{ wikipediaResult.url }}</a>
