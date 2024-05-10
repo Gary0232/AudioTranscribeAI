@@ -8,4 +8,4 @@ data_df = data_df.dropna()
 data_df = data_df.sample(50)
 
 # save the sampled data
-data_df.to_csv("data/news_summary/news_summary_sampled.csv", index=False, encoding="utf-8")
+data_df.to_csv("../data/news_summary/news_summary_sampled.csv", index=False, encoding="utf-8")
