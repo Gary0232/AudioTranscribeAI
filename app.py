@@ -11,7 +11,7 @@ from sqlalchemy import String, Column, Integer, Float, Text, ForeignKey, DateTim
 
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 FILE_UPLOAD_FOLDER = 'uploads'
 ALLOWED_MIME_TYPES = ['audio/wav', 'audio/mpeg', 'audio/ogg', 'audio/x-flac', 'video/mp4']

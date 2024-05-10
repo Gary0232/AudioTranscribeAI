@@ -13,7 +13,6 @@
         </a>
       </template>
       <span>{{item.unikey}}</span><br>
-      <span>{{item.sid}}</span>
     </v-tooltip>
 
 
@@ -39,15 +38,15 @@
   const items = [
     {
       unikey: 'lyan3310',
-      sid: '490203943'
+      sid: '500136245'
     },
     {
       unikey: 'zhhu3786',
-      sid: '510515492'
+      sid: '512515492'
     },
     {
       unikey: 'hguo7508',
-      sid: '512515492'
+      sid: '490203943'
     },
     {
       unikey: 'gudu9182',
