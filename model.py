@@ -51,5 +51,5 @@ def summarization(text):
     return text_summarization(text)
 
 
-def qa(input_text):
-    return question_answer(input_text)
+def qa(input_text, question_text):
+    return question_answer(input_text, question_text)

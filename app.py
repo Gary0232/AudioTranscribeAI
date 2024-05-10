@@ -135,8 +135,15 @@ def api_wikipedia():
 def api_text_summarization():
     # get the text from the request
     text = request.json.get('text')
+    hash_value = request.json.get('hash')
     if not text:
         return jsonify({"status": "error", "message": "No text provided"})
+    processed_file = ProcessedFile.query.filter_by(name=f"{hash_value}.mp3").first()
+    if processed_file.text_summarization_result:
+        return jsonify({
+            "status": "success",
+            "summarization_result": processed_file.text_summarization_result
+        })
     # process the text
     summarized_text = summarization(text)
     return jsonify({
@@ -151,8 +158,11 @@ def api_qa():
     file_hash = request.json.get('hash')
     if not question or not file_hash:
         return jsonify({"status": "error", "message": "No question or hash provided"})
+    processed_file = ProcessedFile.query.filter_by(name=f"{file_hash}.mp3").first()
+    if not processed_file:
+        return jsonify({"status": "error", "message": "Invalid hash value"})
     # process the question
-    answer = qa(question)
+    answer = qa(processed_file.audio_recognition_result.get("text"), question)
     return jsonify({
         "status": "success",
         "answer": answer

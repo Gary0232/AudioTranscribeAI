@@ -85,7 +85,8 @@ const qaList = ref([]);
 
 function generateSummary() {
   axios.post(apiUrl + '/summarize', {
-    text: recognitionResult.value
+    text: recognitionResult.value,
+    hash: fileHash.value
   }).then(response => {
     summarizationResult.value = response.data.summarization_result;
   }).catch(error => {
