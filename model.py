@@ -2,8 +2,8 @@
 # -*-coding:utf-8 -*-
 import spacy
 from log import new_logger
-from asr_for_custom_data import transcribe_audio_for_custom_data
-from llm import text_summarization, question_answer
+from asr.asr_for_custom_data import transcribe_audio_for_custom_data
+from llm.llm import text_summarization, question_answer
 
 logger = new_logger("model")
 

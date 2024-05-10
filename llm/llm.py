@@ -89,7 +89,7 @@ def evaluation(test_df, prompt_template):
 
 if __name__ == "__main__":
     # dataset from https://www.kaggle.com/datasets/sunnysai12345/news-summary
-    data_df = pd.read_csv("data/news_summary/news_summary_sampled.csv")
+    data_df = pd.read_csv("../data/news_summary/news_summary_sampled.csv")
     # drop the row containing NaN
     data_df = data_df.dropna()
 
@@ -102,10 +102,10 @@ if __name__ == "__main__":
         bleu_score, pred_df = evaluation(data_df, prompt)
 
         # save pred_df
-        if not os.path.exists("llm_eval_results"):
-            os.makedirs("llm_eval_results")
+        if not os.path.exists("../llm_eval_results"):
+            os.makedirs("../llm_eval_results")
 
-        save_path = os.path.join("llm_eval_results", model_name)
+        save_path = os.path.join("../llm_eval_results", model_name)
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 

@@ -138,7 +138,7 @@ def main():
         "es": "spanish",
         "ru": "russian"
     }
-    file_path = 'audio_data/fr/common_voice_fr_33153455.mp3'
+    file_path = '../audio_data/fr/common_voice_fr_33153455.mp3'
     transcribe_audio_for_custom_data(file_path, language="french")
 
 

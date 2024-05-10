@@ -1,6 +1,6 @@
 import pandas as pd
 
-data_df = pd.read_csv("data/news_summary/news_summary.csv", encoding="latin1")
+data_df = pd.read_csv("../data/news_summary/news_summary.csv", encoding="latin1")
 # drop the row containing NaN
 data_df = data_df.dropna()
 
