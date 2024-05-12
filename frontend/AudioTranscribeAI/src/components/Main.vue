@@ -105,14 +105,14 @@ function sendQuestion() {
     return;
   }
   qaLoading.value = true;
+  qaList.value.push({
+      who: 'user',
+      text: questionData
+    });
   axios.post(apiUrl + '/qa', {
     question: questionData,
     hash: fileHash.value
   }).then(response => {
-    qaList.value.push({
-      who: 'user',
-      text: questionData
-    });
     qaList.value.push({
       who: 'model',
       text: response.data.answer
