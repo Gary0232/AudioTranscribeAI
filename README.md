@@ -6,6 +6,7 @@
 ![Node.js](https://img.shields.io/badge/Node.js-18.x-brightgreen)
 ![Yarn](https://img.shields.io/badge/Yarn-1.22.x-blue)
 ![Flask](https://img.shields.io/badge/Flask-3.0.3-blue)
+![sqlite3](https://img.shields.io/badge/sqlite-3-blue)
 
 ## Installation
 
