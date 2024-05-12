@@ -1,8 +1,8 @@
 # AudioTranscribeAI
 
-![Vue3](https://img.shields.io/badge/Vue-3-brightgreen)
-![Vuetify3](https://img.shields.io/badge/Vuetify-3-blue)
-![Python](https://img.shields.io/badge/Python-3.8.8+-blue)
+![Vue3](https://img.shields.io/badge/Vue-3.4.0-brightgreen)
+![Vuetify3](https://img.shields.io/badge/Vuetify-3.5.0-blue)
+![Python](https://img.shields.io/badge/Python-3.8+-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-18.x-brightgreen)
 ![Yarn](https://img.shields.io/badge/Yarn-1.22.x-blue)
 ![Flask](https://img.shields.io/badge/Flask-3.0.3-blue)
