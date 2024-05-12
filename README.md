@@ -1,5 +1,12 @@
 # AudioTranscribeAI
 
+![Vue3](https://img.shields.io/badge/Vue-3-brightgreen)
+![Vuetify3](https://img.shields.io/badge/Vuetify-3-blue)
+![Python](https://img.shields.io/badge/Python-3.8.8+-blue)
+![Node.js](https://img.shields.io/badge/Node.js-18.x-brightgreen)
+![Yarn](https://img.shields.io/badge/Yarn-1.22.x-blue)
+![Flask](https://img.shields.io/badge/Flask-3.0.3-blue)
+
 ## Installation
 
 This project is working with [Python 3.8.8+](https://www.python.org/), 
@@ -16,9 +23,9 @@ pip install -r requirements.txt
 
 The frontend is inside the `frontend/AudioTranscribeAI` folder.
 
-The frontend is built with node.js and vue.js.
+The application is built with node.js and vue.js.
 
-To start the server, you need to install the [node.js](https://nodejs.org/en/download) and yarn package manager.
+So to start the server, you need to install the [node.js](https://nodejs.org/en/download) and yarn package manager.
 
 ```bash
 npm install --global yarn
