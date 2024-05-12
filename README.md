@@ -16,11 +16,6 @@ pip install -r requirements.txt
 
 The frontend is inside the `frontend/AudioTranscribeAI` folder.
 
-#### Go to the frontend folder
-```bash
-cd frontend/AudioTranscribeAI
-```
-
 The frontend is built with node.js and vue.js.
 
 To start the server, you need to install the [node.js](https://nodejs.org/en/download) and yarn package manager.
@@ -31,7 +26,10 @@ npm install --global yarn
 
 #### Install the requirements
 ```bash
-yarn
+yarn --cwd frontend/AudioTranscribeAI/  # if you are in the root directory
+# or
+cd frontend/AudioTranscribeAI 
+yarn # if you are in the frontend/AudioTranscribeAI directory
 ```
 
 ## Run the application
@@ -54,7 +52,10 @@ yarn dev # if you are in the frontend/AudioTranscribeAI directory
 
 ## Other commands for the frontend
 
-## Build the frontend application
+## Build the release version of frontend application
 ```bash
-yarn build
+yarn --cwd frontend/AudioTranscribeAI/ build # if you are in the root directory
+# or
+cd frontend/AudioTranscribeAI 
+yarn build # if you are in the frontend/AudioTranscribeAI directory
 ```
