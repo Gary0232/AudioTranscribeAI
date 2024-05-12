@@ -60,7 +60,7 @@ yarn dev # if you are in the frontend/AudioTranscribeAI directory
 
 ## Other commands for the frontend
 
-## Build the release version of frontend application
+### Build the release version of frontend application
 ```bash
 yarn --cwd frontend/AudioTranscribeAI/ build # if you are in the root directory
 # or
