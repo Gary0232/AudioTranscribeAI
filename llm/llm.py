@@ -6,6 +6,7 @@ import sacrebleu
 from tqdm import tqdm
 import os
 import pdb
+import re
 
 # expected input text from audio stage
 # expected output: QA / Sumamrization
@@ -29,6 +30,11 @@ def question_answer(input_text, question_text, prompt_template="background text:
     prompt = pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     outputs = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.7, top_k=50, top_p=0.95)
     outputs = outputs[0]["generated_text"]
+
+    if model_name == "TinyLlama/TinyLlama-1.1B-Chat-v1.0":
+        outputs = outputs.split("<|assistant|>")[1].strip()
+    elif model_name == "meta-llama/Llama-2-7b-chat-hf":
+        outputs = outputs.split("[/INST]")[-1].strip()
 
     return outputs
 
@@ -118,3 +124,11 @@ if __name__ == "__main__":
 
     # save
     eval_performance_df.to_csv(os.path.join(save_path, "eval_performance_df.csv"), index=False)
+
+
+# if __name__ == '__main__':
+#     ori_text = "So we first talk about the background and the significance of recommended systems. And then we'll move on to talk about some of the details about the recommendation algorithms, including collaborative filtering, content-based and learning-based and context-aware recommendation. And then finally, we'll talk about how to evaluate recommended systems. So recommendation is everywhere. So we first talk about the background and the significance of recommended systems. And then we'll move on to talk about some of the details about the recommendation algorithms, including collaborative filtering, content-based and learning-based and context-aware recommendation. And then finally, we'll talk about how to evaluate recommended systems. So recommendation is everywhere. So we first talk about the background and the significance of recommended systems. And then we'll move on to talk about some of the details about the recommendation algorithms, including collaborative filtering, content-based and learning-based and context-aware recommendation. And then finally, we'll talk about how to evaluate recommended systems. So recommendation is everywhere. So we first talk about the background and the significance of recommended systems. And then we'll move on to talk about some of the details about the recommendation algorithms, including collaborative filtering, content-based and learning-based and context-aware recommendation. And then finally, we'll talk about how to evaluate recommended systems. So recommendation is everywhere. So we first talk about the background and the significance of recommended systems. And then we'll move on to talk about some of the details about the recommendation algorithms, including collaborative filtering, content-based and learning-based and context-aware recommendation. And then finally, we'll talk about how to evaluate recommended systems. So recommendation is everywhere. So we first talk about the background and the significance of recommended systems. And then we'll move on to talk about some of the details about the recommendation algorithms, including collaborative filtering, content-based and learning-based and context-aware recommendation. And then finally, we'll talk about how to evaluate recommended systems. So recommendation is everywhere. So we first talk about the background and the significance of recommended systems. And then we'll move on to talk about some of the details about the recommendation algorithms, including collaborative filtering, content-based and learning-based and context-aware recommendation. And then finally, we'll talk about how to evaluate recommended systems. So recommendation is everywhere. So we first talk about the background and the significance of recommended systems. And then we'll move on to talk about some of the details about the recommendation algorithms, including collaborative filtering, content-based and learning-based and context-aware recommendation. And then finally, we'll talk about how to evaluate recommended systems. So recommendation is everywhere. So here we just provide a list of the benefits of recommendation systems. So we see that the first one is that you can use the recommendation systems to provide a list of the benefits of recommendation systems. So here we have a list of the benefits of recommendation systems. So we see that the first one is that you can use the recommendation systems to provide a list of the benefits of recommendation systems. Um"
+    
+#     # res = text_summarization(ori_text)
+#     res = question_answer(ori_text, "what is the significance of recommended systems?")
+#     pdb.set_trace()
