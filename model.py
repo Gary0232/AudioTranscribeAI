@@ -7,26 +7,17 @@ from llm.llm import text_summarization, question_answer
 
 logger = new_logger("model")
 
+# load the spacy model
 nlp = spacy.load('en_core_web_sm')
 
 
-# fr_nlp = spacy.load('fr_core_news_sm')
-# de_nlp = spacy.load('de_core_news_sm')
-# ja_nlp = spacy.load('ja_core_news_sm')
-# ru_nlp = spacy.load('ru_core_news_sm')
-# es_nlp = spacy.load('es_core_news_sm')
-#
-# nlp_map = {
-#     "english": en_nlp,
-#     "french": fr_nlp,
-#     "german": de_nlp,
-#     "japanese": ja_nlp,
-#     "russian": ru_nlp,
-#     "spanish": es_nlp
-# }
-
-
-def audio_recognition(audio_filepath, language_name):
+def audio_recognition(audio_filepath: str, language_name: str):
+    """
+    Recognize the audio and return the text and tokens
+    :param audio_filepath:  The path of the audio file
+    :param language_name: The language of the audio
+    :return: dict of text, tokens, original_text, is_translation
+    """
     result = transcribe_audio_for_custom_data(audio_filepath, language=language_name)
     if not result:
         raise Exception("Audio recognition failed")
@@ -50,8 +41,19 @@ def audio_recognition(audio_filepath, language_name):
 
 
 def summarization(text):
+    """
+    Summarize the text
+    :param text: The input text
+    :return: The summarized text
+    """
     return text_summarization(text)
 
 
 def qa(input_text, question_text):
+    """
+    Answer the question based on the input text
+    :param input_text: The input text
+    :param question_text: The question text
+    :return: The answer
+    """
     return question_answer(input_text, question_text)
