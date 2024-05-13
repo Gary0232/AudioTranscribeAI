@@ -92,16 +92,15 @@ def api_media_recognition():
     try:
         if mime_type == 'video/mp4':
             # Extract audio from video
-            ffmpeg.input(temp_file_path).output(audio_filepath, codec='libmp3lame').run(overwrite_output=True)
+            ffmpeg.input(temp_file_path).output(audio_filepath, codec='libmp3lame', ar=16000).run(overwrite_output=True)
         else:
             # Convert other audio formats to mp3
-            ffmpeg.input(temp_file_path).output(audio_filepath, codec='libmp3lame').run(overwrite_output=True)
+            ffmpeg.input(temp_file_path).output(audio_filepath, codec='libmp3lame', ar=16000).run(overwrite_output=True)
     except Exception as e:
         return jsonify({"status": "error", "message": f"Audio extraction failed: {e}"})
     finally:
         # Remove the temporary video file
         os.remove(temp_file_path)
-
     # Process the audio file
     result = audio_recognition(audio_filepath, language_name)
     print(result)
