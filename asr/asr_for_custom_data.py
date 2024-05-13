@@ -4,8 +4,7 @@ from datasets import Audio, load_dataset
 import soundfile as sf
 from log import new_logger
 from pydub import AudioSegment
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from tqdm import tqdm
+
 
 logger = new_logger("ASR")
 
@@ -63,33 +62,25 @@ def transcribe_audio_chunk(audio_chunk, sr=16000, language="english"):
     return transcription[0]
 
 
-def transcribe_long_audio(audio_path, chunk_length_s=30, language="english", max_workers=8):
+def transcribe_long_audio(audio_path, chunk_length_s=30, language="english"):
     """
     Transcribe long audio files by splitting them into smaller chunks.
     Args:
         audio_path: Path to the audio file
         chunk_length_s: Length of each chunk in seconds (default 30s = 30 seconds)
         language: Language for transcription or translation
-        max_workers: Number of threads to use for parallel processing
     Returns:
         Full transcribed text
     """
     chunks = split_audio(audio_path, chunk_length_s)
-    full_transcription = [""] * len(chunks)
+    full_transcription = []
 
-    print(f"Transcribing audio in {chunk_length_s}-second chunks using {max_workers} threads...")
+    print(f"Transcribing audio in {chunk_length_s}-second chunks...")
 
-    def transcribe_chunk_wrapper(index, chunk):
-        return index, transcribe_audio_chunk(chunk, language=language)
-
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {executor.submit(transcribe_chunk_wrapper, i, chunk): i for i, chunk in enumerate(chunks)}
-
-        with tqdm(total=len(futures), desc="Transcribing Chunks", unit="chunk") as pbar:
-            for future in as_completed(futures):
-                index, transcribed_text = future.result()
-                full_transcription[index] = transcribed_text
-                pbar.update(1)
+    for i, chunk in enumerate(chunks):
+        print(f"Transcribing chunk {i + 1}/{len(chunks)}")
+        transcribed_text = transcribe_audio_chunk(chunk, language=language)
+        full_transcription.append(transcribed_text)
 
     return " ".join(full_transcription)
 
@@ -99,18 +90,26 @@ def transcribe_audio_for_custom_data(file_path, language="english"):
 
     chunk_length_s = 30  # 30-second chunks
     total_duration_s = librosa.get_duration(filename=file_path)
+    audio, sr = sf.read(file_path)
+    if sr != 16000:
+        print(f"Resampling from {sr} Hz to 16000 Hz...")
+        audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
+        sr = 16000
 
     if total_duration_s > 2 * 60 * 60:
         logger.error("Audio duration exceeds the maximum allowed limit of 2 hours.")
         return {"error": "Audio duration exceeds the maximum allowed limit of 2 hours."}
 
     transcribed_text = transcribe_long_audio(file_path, chunk_length_s=chunk_length_s, language=language)
+    input_features = processor(audio, sampling_rate=sr, return_tensors="pt").input_features
+    native_transcription_ids = model.generate(input_features)
+    native_transcription = processor.batch_decode(native_transcription_ids, skip_special_tokens=True)
 
     if language != "english":
         return {
-            "native_transcription": transcribed_text,
+            "native_transcription": native_transcription[0],
             "is_translation": True,
-            "translation": "Placeholder translation text"
+            "translation": transcribed_text,
         }
     else:
         return {
