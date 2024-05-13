@@ -67,3 +67,42 @@ yarn --cwd frontend/AudioTranscribeAI/ build # if you are in the root directory
 cd frontend/AudioTranscribeAI 
 yarn build # if you are in the frontend/AudioTranscribeAI directory
 ```
+
+# Architecture
+
+![Architecture](./architecture.png)
+
+## Machine Learning Model
+
+### Speech Recognition
+
+✨Model: [openai/whisper-small](https://huggingface.co/openai/whisper-small)
+
+### Large Language Model (Text Summarization and Question Answering)
+
+✨Model: 
+- Default: [TinyLlama/TinyLlama-1.1B-Chat-v1.0](https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0)
+- Alternative: [meta-llama/Llama-2-7b-chat-hf](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf)
+
+### NLP Model
+✨Model [spacy](https://spacy.io/): [en_core_web_sm](https://spacy.io/models/en)
+
+### Wikipedia Retrieval
+- [PyDictionary](https://pypi.org/project/PyDictionary/) package
+- [pywikibot](https://pypi.org/project/pywikibot/) package
+- Text processing with [nltk](https://pypi.org/project/nltk/) package
+
+## Backend
+- [Flask](https://flask.palletsprojects.com/en/3.0.x/)
+- [sqlite3](https://docs.python.org/3/library/sqlite3.html)
+- [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/)
+
+## Frontend
+- [Vue.js](https://vuejs.org/)
+- [Vuetify](https://vuetifyjs.com/en/)
+- [axios](https://axios-http.com/)
+- [npm](https://www.npmjs.com/)
+- [yarn](https://yarnpkg.com/)
+- [vue-router](https://router.vuejs.org/)
+
+
