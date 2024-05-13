@@ -106,9 +106,9 @@ function sendQuestion() {
   }
   qaLoading.value = true;
   qaList.value.push({
-      who: 'user',
-      text: questionData
-    });
+    who: 'user',
+    text: questionData
+  });
   axios.post(apiUrl + '/qa', {
     question: questionData,
     hash: fileHash.value
@@ -177,7 +177,7 @@ function sendQuestion() {
             <compromise-text-box :words="recognitionTokenizedResult" v-model="selectedWord" v-if="step === 1"/>
             <div v-else>
               <v-card elevation="0">
-                {{ isTranslation ? originalText : recognitionResult}}
+                {{ isTranslation ? originalText : recognitionResult }}
               </v-card>
               <v-card v-if="isTranslation" class="mt-4">
                 <v-card-title>
@@ -233,33 +233,33 @@ function sendQuestion() {
               <span class="font-weight-bold">Wikipedia Url: </span> <a :href="wikipediaResult.url" target="_blank">{{ wikipediaResult.url }}</a>
             </v-list-item>
             <!--            <v-row class="ma-0 pa-0">-->
-<!--              <v-col-->
-<!--                v-for="n in wikipediaResult.images_url"-->
-<!--                :key="n"-->
-<!--                class="d-flex child-flex ma-0 pa-0"-->
-<!--                cols="4"-->
-<!--              >-->
-<!--                <v-img-->
-<!--                  :src="n"-->
-<!--                  aspect-ratio="1"-->
-<!--                  class="bg-grey-lighten-2"-->
-<!--                  cover-->
-<!--                >-->
-<!--                  <template v-slot:placeholder>-->
-<!--                    <v-row-->
-<!--                      align="center"-->
-<!--                      class="fill-height ma-0"-->
-<!--                      justify="center"-->
-<!--                    >-->
-<!--                      <v-progress-circular-->
-<!--                        color="grey-lighten-5"-->
-<!--                        indeterminate-->
-<!--                      ></v-progress-circular>-->
-<!--                    </v-row>-->
-<!--                  </template>-->
-<!--                </v-img>-->
-<!--              </v-col>-->
-<!--            </v-row>-->
+            <!--              <v-col-->
+            <!--                v-for="n in wikipediaResult.images_url"-->
+            <!--                :key="n"-->
+            <!--                class="d-flex child-flex ma-0 pa-0"-->
+            <!--                cols="4"-->
+            <!--              >-->
+            <!--                <v-img-->
+            <!--                  :src="n"-->
+            <!--                  aspect-ratio="1"-->
+            <!--                  class="bg-grey-lighten-2"-->
+            <!--                  cover-->
+            <!--                >-->
+            <!--                  <template v-slot:placeholder>-->
+            <!--                    <v-row-->
+            <!--                      align="center"-->
+            <!--                      class="fill-height ma-0"-->
+            <!--                      justify="center"-->
+            <!--                    >-->
+            <!--                      <v-progress-circular-->
+            <!--                        color="grey-lighten-5"-->
+            <!--                        indeterminate-->
+            <!--                      ></v-progress-circular>-->
+            <!--                    </v-row>-->
+            <!--                  </template>-->
+            <!--                </v-img>-->
+            <!--              </v-col>-->
+            <!--            </v-row>-->
           </v-list>
           <v-card-text v-else class="flex-grow-1 d-flex flex-column justify-center align-center">
             <v-progress-circular
@@ -314,5 +314,3 @@ function sendQuestion() {
     </v-navigation-drawer>
   </v-container>
 </template>
-
-
