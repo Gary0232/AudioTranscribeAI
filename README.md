@@ -106,3 +106,6 @@ yarn build # if you are in the frontend/AudioTranscribeAI directory
 - [vue-router](https://router.vuejs.org/)
 
 # Evaluation
+For aduio model evaluation, we use the [LibriSpeech](https://huggingface.co/datasets/librispeech_asr) dataset.
+
+`cd asr && python eval_asr.py`
