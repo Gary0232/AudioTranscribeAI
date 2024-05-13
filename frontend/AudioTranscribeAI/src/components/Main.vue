@@ -176,8 +176,8 @@ function sendQuestion() {
           <v-card-text class="flex-grow-1" style="overflow-y: auto">
             <compromise-text-box :words="recognitionTokenizedResult" v-model="selectedWord" v-if="step === 1"/>
             <div v-else>
-              <v-card v-if="originalText" elevation="0">
-                {{ originalText }}
+              <v-card elevation="0">
+                {{ isTranslation ? originalText : recognitionResult}}
               </v-card>
               <v-card v-if="isTranslation" class="mt-4">
                 <v-card-title>

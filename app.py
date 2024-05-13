@@ -158,6 +158,8 @@ def api_text_summarization():
         })
     # process the text
     summarized_text = summarization(text)
+    processed_file.text_summarization_result = summarized_text
+    db.session.commit()
     return jsonify({
         "status": "success",
         "summarization_result": summarized_text
