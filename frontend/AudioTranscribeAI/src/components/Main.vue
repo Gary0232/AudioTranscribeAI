@@ -277,7 +277,7 @@ function sendQuestion() {
             </v-btn>
           </v-card-title>
           <v-card-text style="overflow-y: auto;">
-            {{ recognitionResult }}
+            {{ summarizationResult }}
           </v-card-text>
         </v-card>
       </v-col>
