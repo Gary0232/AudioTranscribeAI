@@ -36,16 +36,14 @@ def transcribe_audio_chunk(audio_chunk, sr=16000, language="english", index=None
     Returns:
         Transcribed or translated text
     """
-    task_type = 'translate' if language != 'english' else 'transcribe'
-    chunk_path = f"temp/temp_chunk_{index}.wav"  # Unique filename for each chunk
+    chunk_path = f"asr/temp/temp_chunk_{index}.mp3"  # Unique filename for each chunk
 
-    audio_chunk.export(chunk_path, format="wav")
+    audio_chunk.export(chunk_path, format="mp3")
     sample, sr = librosa.load(chunk_path, sr=sr)
     input_features = processor(sample, sampling_rate=sr, return_tensors="pt").input_features
     predicted_ids = model.generate(input_features)
     transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)[0]
 
-    os.remove(chunk_path)  # Clean up the temporary file
     results = {"native_transcription": transcription}
     if language != "english":
         forced_decoder_ids = processor.get_decoder_prompt_ids(language="english", task="translate")
@@ -55,6 +53,7 @@ def transcribe_audio_chunk(audio_chunk, sr=16000, language="english", index=None
         results["is_translation"] = True
     else:
         results["is_translation"] = False
+    os.remove(chunk_path)  # Clean up the temporary file
     return results
 
 def transcribe_long_audio(audio_path, chunk_length_s=30, language="english", max_workers=8):
