@@ -99,10 +99,11 @@ def transcribe_audio_for_custom_data(file_path, language="english"):
         print(f"Resampling from {sr} Hz to 16000 Hz...")
         audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
         sr = 16000
-    input_features = processor(audio, sampling_rate=sr, return_tensors="pt").input_features
-    native_transcription_ids = model.generate(input_features)
-    native_transcription = processor.batch_decode(native_transcription_ids, skip_special_tokens=True)
+
     if language != "english":
+        input_features = processor(audio, sampling_rate=sr, return_tensors="pt").input_features
+        native_transcription_ids = model.generate(input_features)
+        native_transcription = processor.batch_decode(native_transcription_ids, skip_special_tokens=True)
         return {
             "native_transcription": transcribed_text,
             "is_translation": True,
