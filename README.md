@@ -70,7 +70,7 @@ yarn build # if you are in the frontend/AudioTranscribeAI directory
 
 # Architecture
 
-![Architecture](./architecture.png)
+![Architecture](./docs/Architecture.png)
 
 ## Machine Learning Model
 
@@ -105,4 +105,4 @@ yarn build # if you are in the frontend/AudioTranscribeAI directory
 - [yarn](https://yarnpkg.com/)
 - [vue-router](https://router.vuejs.org/)
 
-
+# Evaluation
