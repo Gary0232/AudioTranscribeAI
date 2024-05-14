@@ -78,6 +78,8 @@ yarn build # if you are in the frontend/AudioTranscribeAI directory
 
 ## Machine Learning Model
 
+![framework.png](docs/framework.png)
+
 ### Speech Recognition
 
 ✨Model: [openai/whisper-small](https://huggingface.co/openai/whisper-small)
@@ -96,12 +98,12 @@ yarn build # if you are in the frontend/AudioTranscribeAI directory
 - [pywikibot](https://pypi.org/project/pywikibot/) package
 - Text processing with [nltk](https://pypi.org/project/nltk/) package
 
-## Backend
+### Backend
 - [Flask](https://flask.palletsprojects.com/en/3.0.x/)
 - [sqlite3](https://docs.python.org/3/library/sqlite3.html)
 - [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/)
 
-## Frontend
+### Frontend
 - [Vue.js](https://vuejs.org/)
 - [Vuetify](https://vuetifyjs.com/en/)
 - [axios](https://axios-http.com/)
@@ -117,3 +119,9 @@ For aduio model evaluation, we use the [LibriSpeech](https://huggingface.co/data
 For the LLM evaluation on summarization, direct use the `llm.py`:
 
 `python llm/llm.py`
+
+## Results
+
+![TinyLlama.png](docs/TinyLlama.png)
+
+![whisper-small.png](docs/whisper-small.png)
