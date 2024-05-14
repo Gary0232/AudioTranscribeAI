@@ -113,3 +113,7 @@ yarn build # if you are in the frontend/AudioTranscribeAI directory
 For aduio model evaluation, we use the [LibriSpeech](https://huggingface.co/datasets/librispeech_asr) dataset.
 
 `cd asr && python eval_asr.py`
+
+For the LLM evaluation on summarization, direct use the `llm.py`:
+
+`python llm/llm.py`
