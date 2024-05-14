@@ -34,10 +34,12 @@ npm install --global yarn
 
 #### Install the requirements
 ```bash
-yarn --cwd frontend/AudioTranscribeAI/  # if you are in the root directory
+# if you are in the root directory
+yarn --cwd frontend/AudioTranscribeAI/  
 # or
 cd frontend/AudioTranscribeAI 
-yarn # if you are in the frontend/AudioTranscribeAI directory
+# if you are in the frontend/AudioTranscribeAI directory
+yarn 
 ```
 
 ## Run the application
@@ -52,10 +54,12 @@ python app.py
 ### Run the frontend
 
 ```bash
-yarn --cwd frontend/AudioTranscribeAI/ dev # if you are in the root directory
+# if you are in the root directory
+yarn --cwd frontend/AudioTranscribeAI/ dev 
 # or
 cd frontend/AudioTranscribeAI 
-yarn dev # if you are in the frontend/AudioTranscribeAI directory
+# if you are in the frontend/AudioTranscribeAI directory
+yarn dev 
 ````
 
 ## Other commands for the frontend
